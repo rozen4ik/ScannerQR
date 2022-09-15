@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ScannerQR.iml" filepath="$PROJECT_DIR$/.idea/modules/ScannerQR.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ScannerQR.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ScannerQR.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ScannerQR.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ScannerQR.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ScannerQR.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ScannerQR.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ScannerQR.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ScannerQR.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fudi-nfc/ScannerQR.fudi-nfc.iml" filepath="$PROJECT_DIR$/.idea/modules/fudi-nfc/ScannerQR.fudi-nfc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fudi-nfc/ScannerQR.fudi-nfc.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/fudi-nfc/ScannerQR.fudi-nfc.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fudi-nfc/ScannerQR.fudi-nfc.main.iml" filepath="$PROJECT_DIR$/.idea/modules/fudi-nfc/ScannerQR.fudi-nfc.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fudi-nfc/ScannerQR.fudi-nfc.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/fudi-nfc/ScannerQR.fudi-nfc.unitTest.iml" />
+    </modules>
+  </component>
+</project>
