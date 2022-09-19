@@ -18,18 +18,19 @@ class DataSourceCatalogPackage {
         if (getValidMessage(message)) {
             catalogPackage.solution = getSolution(message)
             catalogPackage.capt = getCapt(message)
+            catalogPackage.numberOfPasses = getNumberOfPasses(message)
         } else {
             catalogPackage.solution = "Данные не найдены"
             catalogPackage.capt = "Данные не найдены"
+            catalogPackage.numberOfPasses = "Данные не найдены"
         }
     }
 
     fun setInfoCard(message: String) {
+        Log.d("TAG", message)
         if (getValidInfoCard(message)) {
-            catalogPackage.numberOfPasses = getNumberOfPasses(message)
             catalogPackage.passageBalance = getBalance(message)
         } else {
-            catalogPackage.numberOfPasses = "Данные не найдены"
             catalogPackage.passageBalance = "Данные не найдены"
         }
     }
@@ -53,7 +54,7 @@ class DataSourceCatalogPackage {
     }
 
     private fun getValidInfoCard(message: String): Boolean {
-        return message.contains("<package id", ignoreCase = true)
+        return message.contains("<currency name=\"RUB\"  comment=\"Российский рубль\"", ignoreCase = true)
     }
 
     private fun getValidMessageAnswer(message: String): Boolean {
@@ -87,12 +88,13 @@ class DataSourceCatalogPackage {
     }
 
     private fun getNumberOfPasses(message: String): String {
-        var use_count = message.substringAfter("use_count=\"")
-        use_count = use_count.substringBefore("\"  description")
-        var used_count = message.substringAfter("used_count=\"")
-        used_count = used_count.substringBefore("\"  eid")
-        val result: Int = use_count.toInt() - used_count.toInt()
-        return result.toString()
+        if (message.contains("Остаток", ignoreCase = true)) {
+            var result = message.substringAfter("Остаток=")
+            result = result.substringBefore(",Стоимость=")
+            return result
+        } else {
+            return "Данные не найдены"
+        }
     }
 
     private fun getDatePasses(message: String): String {

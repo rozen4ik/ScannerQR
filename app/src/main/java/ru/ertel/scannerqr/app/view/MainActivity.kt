@@ -123,6 +123,7 @@ class MainActivity : NfcAct(), KoinComponent {
                         try {
                             konturController.requestPOST(urlPassage, messageBlockDevice)
                             msg = konturController.requestPOST(urlPassage, messagePassageCard)
+                            dataSourceCatalogPackage.setMessagePassageCard(msg)
                             msg = msg.substringAfter("<Message>")
                             msg = msg.substringBefore("</Message>")
                             msg = msg.replace("rPrior", "rFinal")
@@ -130,7 +131,6 @@ class MainActivity : NfcAct(), KoinComponent {
                                     "<script>" +
                                     "<Message>$msg</Message>" +
                                     "</script>"
-                            dataSourceCatalogPackage.setMessagePassageCard(msg)
                             konturController.requestPOST(urlPassage, msg)
                             dataSourceCatalogPackage.setAnswerDevice(
                                 konturController.requestPOST(
