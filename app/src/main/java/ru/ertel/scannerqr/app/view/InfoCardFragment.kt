@@ -16,6 +16,7 @@ class InfoCardFragment : Fragment() {
     private var permittedRates = ""
     private var startAction = ""
     private var endAction = ""
+    private var balance = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +28,7 @@ class InfoCardFragment : Fragment() {
         permittedRates = arguments?.getString("permittedRates").toString()
         startAction = arguments?.getString("startAction").toString()
         endAction = arguments?.getString("endAction").toString()
+        balance = arguments?.getString("balance").toString()
         return inflater.inflate(R.layout.fragment_info_card, container, false)
     }
 
@@ -40,6 +42,7 @@ class InfoCardFragment : Fragment() {
         val textPermittedRates: TextView = view.findViewById(R.id.textPermittedRates)
         val textStartAction: TextView = view.findViewById(R.id.textStartAction)
         val textEndAction: TextView = view.findViewById(R.id.textEndAction)
+        val textBalance: TextView = view.findViewById(R.id.textBalance)
         nameBar.text = "Информация о индефикаторе --$number--"
         textCondition.text = condition
         textNumber.text = number
@@ -47,6 +50,7 @@ class InfoCardFragment : Fragment() {
         textPermittedRates.text = permittedRates
         textStartAction.text = startAction
         textEndAction.text = endAction
+        textBalance.text = balance
     }
 
     companion object {

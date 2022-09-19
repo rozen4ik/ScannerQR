@@ -17,6 +17,7 @@ class PassageCardFragment : Fragment() {
     private var capt = ""
     private var numberOfPasses = ""
     private var datePasses = ""
+    private var passageBalance = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,6 +30,7 @@ class PassageCardFragment : Fragment() {
         capt = arguments?.getString("capt").toString()
         numberOfPasses = arguments?.getString("numberOfPasses").toString()
         datePasses = arguments?.getString("datePasses").toString()
+        passageBalance = arguments?.getString("passageBalance").toString()
         return inflater.inflate(R.layout.fragment_passage_card, container, false)
     }
 
@@ -40,15 +42,17 @@ class PassageCardFragment : Fragment() {
         val captText: TextView = view.findViewById(R.id.capt)
         val numberOfPassesText: TextView = view.findViewById(R.id.numberOfPasses)
         val datePassesText: TextView = view.findViewById(R.id.datePasses)
+        val passageBalanceText: TextView = view.findViewById(R.id.passageBalance)
         deviceNameText.text = deviceName
         requestPassageText.text = "Запрос на проход $requestPassage"
         solutionText.text = solution
-        if (solutionText.text != "Проход разрешен") {
+        if ((solutionText.text != "Проход разрешен") && (solutionText.text != "Карта сотрудника")) {
             solutionText.setTextColor(Color.RED)
         }
         captText.text = capt
         numberOfPassesText.text = numberOfPasses
         datePassesText.text = datePasses
+        passageBalanceText.text = passageBalance
     }
 
     companion object {

@@ -10,6 +10,7 @@ class DataSourceCard {
         "",
         "",
         "",
+        "",
         ""
     )
 
@@ -22,6 +23,7 @@ class DataSourceCard {
             card.permittedRates = getPermittedRates(message)
             card.startAction = getStartAction(message)
             card.endAction = getEndAction(message)
+            card.balance = getBalance(message)
         }
         else {
             card.number = "Данные не найдены"
@@ -30,6 +32,7 @@ class DataSourceCard {
             card.permittedRates = "Данные не найдены"
             card.startAction = "Данные не найдены"
             card.endAction = "Данные не найдены"
+            card.balance = "Данные не найдены"
         }
     }
 
@@ -78,5 +81,15 @@ class DataSourceCard {
         var result = message.substringAfter("valid_to=\"")
         result = result.substringBefore("\"  category")
         return result
+    }
+
+    private fun getBalance(message: String): String {
+        if (message.contains("<currency name=\"RUB\"", ignoreCase = true)) {
+            var result = message.substringAfter("\"Российский рубль\"  value=\"")
+            result = result.substringBefore("\" />")
+            return "$result(RUB)"
+        } else {
+            return "Данные не найдены"
+        }
     }
 }

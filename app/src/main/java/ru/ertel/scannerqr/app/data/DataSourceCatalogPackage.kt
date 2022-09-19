@@ -10,14 +10,14 @@ class DataSourceCatalogPackage {
         "",
         "",
         "",
+        "",
         ""
     )
 
     fun setMessagePassageCard(message: String) {
         if (getValidMessage(message)) {
-            val msg = message.replace("rPrior", "rFinal")
-            catalogPackage.solution = getSolution(msg)
-            catalogPackage.capt = getCapt(msg)
+            catalogPackage.solution = getSolution(message)
+            catalogPackage.capt = getCapt(message)
         } else {
             catalogPackage.solution = "Данные не найдены"
             catalogPackage.capt = "Данные не найдены"
@@ -27,8 +27,10 @@ class DataSourceCatalogPackage {
     fun setInfoCard(message: String) {
         if (getValidInfoCard(message)) {
             catalogPackage.numberOfPasses = getNumberOfPasses(message)
+            catalogPackage.passageBalance = getBalance(message)
         } else {
             catalogPackage.numberOfPasses = "Данные не найдены"
+            catalogPackage.passageBalance = "Данные не найдены"
         }
     }
 
@@ -97,5 +99,15 @@ class DataSourceCatalogPackage {
         var result = message.substringAfter("time=\"")
         result = result.substringBefore("\" text=")
         return result
+    }
+
+    private fun getBalance(message: String): String {
+        if (message.contains("<currency name=\"RUB\"", ignoreCase = true)) {
+            var result = message.substringAfter("\"Российский рубль\"  value=\"")
+            result = result.substringBefore("\" />")
+            return "$result(RUB)"
+        } else {
+            return "Данные не найдены"
+        }
     }
 }

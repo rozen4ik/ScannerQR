@@ -36,9 +36,9 @@
 
     <Button
         android:id="@+id/buttonSaveSettings"
-        android:text="Сохранить"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сохранить адрес " />
 
     <TextView
         android:layout_width="match_parent"
@@ -52,4 +52,35 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <EditText
+        android:id="@+id/editDeviceId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="48dp"
+        android:ems="10"
+        android:hint="Введите id устройства"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/buttonSaveDeviceId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сохранить устройство" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="48dp"
+        android:text="Используется устройство"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
 </LinearLayout>

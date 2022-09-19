@@ -5,10 +5,12 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -38,22 +40,19 @@ class MainActivity : NfcAct(), KoinComponent {
         infoCard = findViewById(R.id.infoCard)
         passageCard = findViewById(R.id.passageCard)
 
-        var count = 0
-        val frame: FrameLayout = findViewById(R.id.place_fragments)
-        frame.setOnClickListener {
-            count++
-            if (count == 5) {
-                count = 0
-                val intent = Intent(this@MainActivity, SettingsActivity::class.java)
-                startActivity(intent)
-            }
+        val settings: SharedPreferences = getSharedPreferences("URL", MODE_PRIVATE)
+        val setDeivce: SharedPreferences = getSharedPreferences("DEVICE", MODE_PRIVATE)
+        val bodyURL = settings.getString(SettingsActivity.SAVE_SETTINGS, "").toString()
+        val device = setDeivce.getString(SettingsActivity.SAVE_SETTINGS, "").toString()
+
+        if (bodyURL.isEmpty()) {
+            Toast.makeText(this, "ip и порт не настроены", Toast.LENGTH_SHORT).show()
         }
 
         var resultScanInfoCard = intent?.extras?.getString(ScanCardActivity.SCANINFOCARD)
         val dataSourceCard = DataSourceCard()
         val dataSourceCatalogPackage = DataSourceCatalogPackage()
         val konturController = KonturController()
-        var bodyURL = ""
         var url = ""
         var urlPassage = ""
         var messageInfoCard =
@@ -67,7 +66,7 @@ class MainActivity : NfcAct(), KoinComponent {
                     "</spd-xml-api>"
         val messageBlockDevice = "<?xml version=\"1.0\" encoding=\"Windows-1251\"?> " +
                 "<script session=\"85D323F3-8EBD-48E6-A085-4E652468B8D6\"> " +
-                "<command name=\"cLockDevice\" device=\"5\" guid=\"95D454F3-8EBD-50E6-A085-4E644468B8D6\"> " +
+                "<command name=\"cLockDevice\" device=\"$device\" guid=\"95D454F3-8EBD-50E6-A085-4E644468B8D6\"> " +
                 "<param name=\"cpLocker\">Карта Тройка</param> " +
                 "<param name=\"cpDuration\">30000</param> " +
                 "<param name=\"cpSession\">85D323F3-8EBD-48E6-A085-4E652468B8D6</param> " +
@@ -75,16 +74,16 @@ class MainActivity : NfcAct(), KoinComponent {
                 "</script>"
         var messagePassageCard = "<?xml version=\"1.0\" encoding=\"Windows-1251\"?> " +
                 "<script session=\"85D323F3-8EBD-48E6-A085-4E652468B8D6\"> " +
-                "<command name=\"cRequest\" device=\"5\" guid=\"44871464-8EBD-56E6-A085-4E654768B8D6\"> " +
+                "<command name=\"cRequest\" device=\"$device\" guid=\"44871464-8EBD-56E6-A085-4E654768B8D6\"> " +
                 "<param name=\"cpCard\">$resultScanInfoCard</param> " +
                 "<param name=\"cpCardType\">1</param> " +
                 "<param name=\"cpDirection\">1</param> " +
-                "<param name=\"cpText\">Запрос по карте Тройка</param> " +
+                "<param name=\"cpText\">Запрос по карте</param> " +
                 "</command> " +
                 "</script>"
         val messageUnBlockDevice = "<?xml version=\"1.0\" encoding=\"Windows-1251\"?> " +
                 "<script session=\"85D323F3-8EBD-48E6-A085-4E652468B8D6\"> " +
-                "<command name=\"cUnlockDevice\" device=\"5\" guid=\"98545167-8EBD-6578-A085-4E633368B8D6\"> " +
+                "<command name=\"cUnlockDevice\" device=\"$device\" guid=\"98545167-8EBD-6578-A085-4E633368B8D6\"> " +
                 "<param name=\"cpLocker\">Карта Тройка</param> " +
                 "<param name=\"cpDuration\">30000</param> " +
                 "<param name=\"cpSession\">85D323F3-8EBD-48E6-A085-4E652468B8D6</param> " +
@@ -92,17 +91,15 @@ class MainActivity : NfcAct(), KoinComponent {
                 "</script>"
         val answerDevice = "<?xml version=\"1.0\" encoding=\"Windows-1251\"?> " +
                 "<script session=\"85D323F3-8EBD-48E6-A085-4E652468B8D6\"> " +
-                "<wait delay=\"20000\" device=\"5\"/> " +
+                "<wait delay=\"20000\" device=\"$device\"/> " +
                 "</script>"
 
         infoCard.setOnClickListener {
-            finish()
             val intent = Intent(this@MainActivity, ScanCardActivity::class.java)
             checkCameraPermission(intent)
         }
 
         passageCard.setOnClickListener {
-            finish()
             val intent = Intent(this@MainActivity, ScanCardActivity::class.java)
             intent.putExtra(ScanCardActivity.SCANINFOCARD, "/")
             checkCameraPermission(intent)
@@ -118,21 +115,23 @@ class MainActivity : NfcAct(), KoinComponent {
                     "$resultScanInfoCard",
                     resultScanInfoCard.replace("/", "")
                 )
-                val settings: SharedPreferences = getSharedPreferences("URL", MODE_PRIVATE)
-                bodyURL = settings.getString(SettingsActivity.SAVE_SETTINGS, "").toString()
                 url = "$bodyURL/spd-xml-api"
                 urlPassage = "$bodyURL/monitor?script=True"
+                var msg = ""
                 runBlocking {
                     launch(newSingleThreadContext("MyOwnThread")) {
                         try {
                             konturController.requestPOST(urlPassage, messageBlockDevice)
-                            konturController.requestPOST(urlPassage, messagePassageCard)
-                            dataSourceCatalogPackage.setMessagePassageCard(
-                                konturController.requestPOST(
-                                    urlPassage,
-                                    messagePassageCard
-                                )
-                            )
+                            msg = konturController.requestPOST(urlPassage, messagePassageCard)
+                            msg = msg.substringAfter("<Message>")
+                            msg = msg.substringBefore("</Message>")
+                            msg = msg.replace("rPrior", "rFinal")
+                            msg = "<?xml version=\"1.0\" encoding=\"Windows-1251\"?> " +
+                                    "<script>" +
+                                    "<Message>$msg</Message>" +
+                                    "</script>"
+                            dataSourceCatalogPackage.setMessagePassageCard(msg)
+                            konturController.requestPOST(urlPassage, msg)
                             dataSourceCatalogPackage.setAnswerDevice(
                                 konturController.requestPOST(
                                     urlPassage,
@@ -160,11 +159,10 @@ class MainActivity : NfcAct(), KoinComponent {
                     dataSourceCatalogPackage.getPassageCard().numberOfPasses
                 )
                 bundle.putString("datePasses", dataSourceCatalogPackage.getPassageCard().datePasses)
+                bundle.putString("passageBalance", dataSourceCatalogPackage.getPassageCard().passageBalance)
                 passageCardFragment.arguments = bundle
                 openFragment(passageCardFragment)
             } else {
-                val settings: SharedPreferences = getSharedPreferences("URL", MODE_PRIVATE)
-                bodyURL = settings.getString(SettingsActivity.SAVE_SETTINGS, "").toString()
                 url = "$bodyURL/spd-xml-api"
                 urlPassage = "$bodyURL/monitor?script=True"
                 updateInfo(konturController, dataSourceCard, url, messageInfoCard)
@@ -177,6 +175,7 @@ class MainActivity : NfcAct(), KoinComponent {
                 )
                 bundle.putString("startAction", dataSourceCard.getInfoCard().startAction)
                 bundle.putString("endAction", dataSourceCard.getInfoCard().endAction)
+                bundle.putString("balance", dataSourceCard.getInfoCard().balance)
                 infoCardFragment.arguments = bundle
                 openFragment(infoCardFragment)
             }
@@ -228,6 +227,7 @@ class MainActivity : NfcAct(), KoinComponent {
                 arrayOf(Manifest.permission.CAMERA), 12)
         } else {
             startActivity(intent)
+            finish()
         }
     }
 

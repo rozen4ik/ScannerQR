@@ -7,5 +7,6 @@ data class Card(
     var ruleOfUse: String,
     var permittedRates: String,
     var startAction: String,
-    var endAction: String
+    var endAction: String,
+    var balance: String
     )
