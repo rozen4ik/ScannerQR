@@ -1,42 +1,41 @@
 package ru.ertel.scannerqr.app.view
 
-import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
+import android.opengl.Visibility
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import ru.ertel.scannerqr.app.R
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
-import org.koin.core.KoinComponent
+import ru.ertel.scannerqr.app.R
 import ru.ertel.scannerqr.app.controller.KonturController
 import ru.ertel.scannerqr.app.data.DataSourceCard
 import ru.ertel.scannerqr.app.data.DataSourceCatalogPackage
-import ru.ertel.scannerqr.gear.NfcAct
 
-class MainActivity : NfcAct(), KoinComponent {
+class ManualActivity : AppCompatActivity() {
 
     private val bundle = Bundle()
     private var messageAnswerKontur = ""
-    private lateinit var infoCard: Button
-    private lateinit var passageCard: Button
+    private lateinit var infoManulaCard: Button
+    private lateinit var passageManualCard: Button
+    private lateinit var editNumberCard: EditText
     private val infoCardFragment: InfoCardFragment = InfoCardFragment()
     private val passageCardFragment: PassageCardFragment = PassageCardFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_manual)
 
-        infoCard = findViewById(R.id.infoCard)
-        passageCard = findViewById(R.id.passageCard)
+        infoManulaCard = findViewById(R.id.infoManualCard)
+        passageManualCard = findViewById(R.id.passageManualCard)
+        editNumberCard = findViewById(R.id.editNumberCard)
 
         val settings: SharedPreferences = getSharedPreferences("URL", MODE_PRIVATE)
         val setDeivce: SharedPreferences = getSharedPreferences("DEVICE", MODE_PRIVATE)
@@ -47,7 +46,6 @@ class MainActivity : NfcAct(), KoinComponent {
             Toast.makeText(this, "ip и порт не настроены", Toast.LENGTH_SHORT).show()
         }
 
-        var resultScanInfoCard = intent?.extras?.getString(ScanCardActivity.SCANINFOCARD)
         val dataSourceCard = DataSourceCard()
         val dataSourceCatalogPackage = DataSourceCatalogPackage()
         val konturController = KonturController()
@@ -57,7 +55,7 @@ class MainActivity : NfcAct(), KoinComponent {
             "<?xml version=\"1.0\" encoding=\"windows1251\" ?>" +
                     "<spd-xml-api>" +
                     "<request version=\"1.0\" ruid=\"739F9F2B-AEDD-4D94-93FF-EB59A9A1FCF5\">" +
-                    "<client identifier=\"$resultScanInfoCard\">" +
+                    "<client identifier=\"\">" +
                     "<identifiers />" +
                     "</client>" +
                     "</request>" +
@@ -73,7 +71,7 @@ class MainActivity : NfcAct(), KoinComponent {
         var messagePassageCard = "<?xml version=\"1.0\" encoding=\"Windows-1251\"?> " +
                 "<script session=\"85D323F3-8EBD-48E6-A085-4E652468B8D6\"> " +
                 "<command name=\"cRequest\" device=\"$device\" guid=\"44871464-8EBD-56E6-A085-4E654768B8D6\"> " +
-                "<param name=\"cpCard\">$resultScanInfoCard</param> " +
+                "<param name=\"cpCard\"></param> " +
                 "<param name=\"cpCardType\">1</param> " +
                 "<param name=\"cpDirection\">1</param> " +
                 "<param name=\"cpText\">Запрос по карте</param> " +
@@ -92,81 +90,69 @@ class MainActivity : NfcAct(), KoinComponent {
                 "<wait delay=\"20000\" device=\"$device\"/> " +
                 "</script>"
 
-        infoCard.setOnClickListener {
-            val intent = Intent(this@MainActivity, ScanCardActivity::class.java)
-            checkCameraPermission(intent)
+        infoManulaCard.setOnClickListener {
+            recreate()
+            messageInfoCard = messageInfoCard.replace(
+                "<client identifier=\"\">",
+                "<client identifier=\"${editNumberCard.text}\">"
+            )
+            url = "$bodyURL/spd-xml-api"
+            urlPassage = "$bodyURL/monitor?script=True"
+            updateInfoCard(konturController, dataSourceCard, url, messageInfoCard)
+            bundle.putString("condition", dataSourceCard.getInfoCard().condition)
+            bundle.putString("number", dataSourceCard.getInfoCard().number)
+            bundle.putString("ruleOfUse", dataSourceCard.getInfoCard().ruleOfUse)
+            bundle.putString(
+                "permittedRates",
+                dataSourceCard.getInfoCard().permittedRates
+            )
+            bundle.putString("startAction", dataSourceCard.getInfoCard().startAction)
+            bundle.putString("endAction", dataSourceCard.getInfoCard().endAction)
+            bundle.putString("balance", dataSourceCard.getInfoCard().balance)
+            infoCardFragment.arguments = bundle
+            openFragment(infoCardFragment)
         }
 
-        passageCard.setOnClickListener {
-            val intent = Intent(this@MainActivity, ScanCardActivity::class.java)
-            intent.putExtra(ScanCardActivity.SCANINFOCARD, "/")
-            checkCameraPermission(intent)
+        passageManualCard.setOnClickListener {
+            recreate()
+            messageInfoCard = messageInfoCard.replace(
+                "<client identifier=\"\">",
+                "<client identifier=\"${editNumberCard.text}\">"
+            )
+            messagePassageCard = messagePassageCard.replace(
+                "<param name=\"cpCard\"></param>",
+                "<param name=\"cpCard\">${editNumberCard.text}</param>"
+            )
+            url = "$bodyURL/spd-xml-api"
+            urlPassage = "$bodyURL/monitor?script=True"
+            updatePassageCard(
+                konturController,
+                dataSourceCatalogPackage,
+                urlPassage,
+                url,
+                messageBlockDevice,
+                messagePassageCard,
+                answerDevice,
+                messageUnBlockDevice,
+                messageInfoCard
+            )
+            bundle.putString("deviceName", dataSourceCatalogPackage.getPassageCard().deviceName)
+            bundle.putString("requestPassage", editNumberCard.text.toString())
+            bundle.putString("solution", dataSourceCatalogPackage.getPassageCard().solution)
+            bundle.putString("capt", dataSourceCatalogPackage.getPassageCard().capt)
+            bundle.putString(
+                "numberOfPasses",
+                dataSourceCatalogPackage.getPassageCard().numberOfPasses
+            )
+            bundle.putString("datePasses", dataSourceCatalogPackage.getPassageCard().datePasses)
+            bundle.putString("passageBalance", dataSourceCatalogPackage.getPassageCard().passageBalance)
+            passageCardFragment.arguments = bundle
+            openFragment(passageCardFragment)
         }
-
-        if (resultScanInfoCard != null) {
-            if (resultScanInfoCard.contains("/", ignoreCase = true)) {
-                messageInfoCard = messageInfoCard.replace(
-                    "$resultScanInfoCard",
-                    resultScanInfoCard.replace("/", "")
-                )
-                messagePassageCard = messagePassageCard.replace(
-                    "$resultScanInfoCard",
-                    resultScanInfoCard.replace("/", "")
-                )
-                url = "$bodyURL/spd-xml-api"
-                urlPassage = "$bodyURL/monitor?script=True"
-                updatePassageCard(
-                    konturController,
-                    dataSourceCatalogPackage,
-                    urlPassage,
-                    url,
-                    messageBlockDevice,
-                    messagePassageCard,
-                    answerDevice,
-                    messageUnBlockDevice,
-                    messageInfoCard
-                )
-                bundle.putString("deviceName", dataSourceCatalogPackage.getPassageCard().deviceName)
-                bundle.putString("requestPassage", resultScanInfoCard)
-                bundle.putString("solution", dataSourceCatalogPackage.getPassageCard().solution)
-                bundle.putString("capt", dataSourceCatalogPackage.getPassageCard().capt)
-                bundle.putString(
-                    "numberOfPasses",
-                    dataSourceCatalogPackage.getPassageCard().numberOfPasses
-                )
-                bundle.putString("datePasses", dataSourceCatalogPackage.getPassageCard().datePasses)
-                bundle.putString("passageBalance", dataSourceCatalogPackage.getPassageCard().passageBalance)
-                passageCardFragment.arguments = bundle
-                openFragment(passageCardFragment)
-            } else {
-                url = "$bodyURL/spd-xml-api"
-                urlPassage = "$bodyURL/monitor?script=True"
-                updateInfo(konturController, dataSourceCard, url, messageInfoCard)
-                bundle.putString("condition", dataSourceCard.getInfoCard().condition)
-                bundle.putString("number", dataSourceCard.getInfoCard().number)
-                bundle.putString("ruleOfUse", dataSourceCard.getInfoCard().ruleOfUse)
-                bundle.putString(
-                    "permittedRates",
-                    dataSourceCard.getInfoCard().permittedRates
-                )
-                bundle.putString("startAction", dataSourceCard.getInfoCard().startAction)
-                bundle.putString("endAction", dataSourceCard.getInfoCard().endAction)
-                bundle.putString("balance", dataSourceCard.getInfoCard().balance)
-                infoCardFragment.arguments = bundle
-                openFragment(infoCardFragment)
-            }
-        }
-
-        enableBeam()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        nfcAdapter?.disableForegroundDispatch(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu?.add(Menu.NONE, 2, 2, "Ручной ввод")
+        menu?.add(Menu.NONE, 3, 2, "Автоматический")
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
@@ -174,13 +160,13 @@ class MainActivity : NfcAct(), KoinComponent {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_about -> {
-                val intent = Intent(this@MainActivity, AboutActivity::class.java)
+                val intent = Intent(this@ManualActivity, AboutActivity::class.java)
                 startActivity(intent)
                 finish()
                 return true
             }
-            2 -> {
-                val intent = Intent(this@MainActivity, ManualActivity::class.java)
+            3 -> {
+                val intent = Intent(this@ManualActivity, MainActivity::class.java)
                 startActivity(intent)
                 finish()
                 return true
@@ -189,40 +175,14 @@ class MainActivity : NfcAct(), KoinComponent {
         return super.onOptionsItemSelected(item);
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 12) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            }
-        }
-    }
-
-    private fun checkCameraPermission(intent: Intent) {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.CAMERA), 12)
-        } else {
-            startActivity(intent)
-            finish()
-        }
-    }
-
     private fun openFragment(fragment: Fragment) {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.place_fragments, fragment)
+            .replace(R.id.place_manual_fragments, fragment)
             .commit()
     }
 
-    private fun updateInfo(
+    private fun updateInfoCard(
         konturController: KonturController,
         dataSourceCard: DataSourceCard,
         url: String,
