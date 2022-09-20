@@ -1,40 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2020. BoostTag E.I.R.L. Romell D.Z.
-  ~ All rights reserved
-  ~ porfile.romellfudi.com
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">Сканнер ЭРТЕЛ</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="bluetooth_not_present_exception">Bluetooth is not supported by this device!</string>
-    <string name="title_activity_nfc">NfcActivity</string>
-    <string name="btn_write_email_nfc">Write email</string>
-    <string name="btn_write_sms_text">Write an SMS</string>
-    <string name="btn_write_geolocation_nfc_text">Write Geolocation</string>
-    <string name="btn_write_uri_nfc_text">Write URI</string>
-    <string name="btn_write_tel_nfc_text">Write Tel</string>
-    <string name="btn_write_bluetooth_nfc_text">Write Bluetooth MAC</string>
-    <string name="progressdialog_waiting_for_tag">Waiting for tag…</string>
-    <string name="progressdialog_waiting_for_tag_message">Tap tag to write…</string>
-    <string name="no_input">You should give me something to write</string>
-    <string name="my_email">romllz489@gmail.com</string>
-    <string name="hint_email">Enter your email</string>
-    <string name="hint_sms">Enter a SMS message</string>
-    <string name="my_sms">Send data via sms</string>
-    <string name="hint_phone">Introduce your phone</string>
-    <string name="my_phone">+51952645566</string>
-    <string name="hint_latitude">Your latitude</string>
-    <string name="my_latitude">-12.0569696</string>
-    <string name="my_longitude">-77.129733</string>
-    <string name="hint_uri">Introduce an URI</string>
-    <string name="my_uri">data:text/plain;charset=utf-8;base64,ZGF0YQ==</string>
-    <string name="my_mac">03:d6:bf:a8:b3:cf</string>
-    <string name="hint_mac">Introduce Bluetooth MAC</string>
-    <string name="hint_longitude">Your longitude</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="app_name">Сканер ЭРТЕЛ</string>
 </resources>
