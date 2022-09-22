@@ -49,7 +49,9 @@ dependencies {
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
     implementation 'me.dm7.barcodescanner:zbar:1.8.4'
     implementation "androidx.fragment:fragment-ktx:1.5.2"
+    implementation 'com.github.yuriy-budiyev:code-scanner:2.3.2'
 }
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }

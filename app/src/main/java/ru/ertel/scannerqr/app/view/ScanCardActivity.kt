@@ -9,55 +9,89 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.widget.Toast
+import com.budiyev.android.codescanner.*
 import me.dm7.barcodescanner.zbar.Result
 import me.dm7.barcodescanner.zbar.ZBarScannerView
 import ru.ertel.scannerqr.app.R
 import ru.ertel.scannerqr.gear.NfcAct
 import java.math.BigInteger
 
-class ScanCardActivity : NfcAct(), ZBarScannerView.ResultHandler {
+class ScanCardActivity : NfcAct() {
 
     companion object {
         const val SCANINFOCARD = "SCANINFOCARD"
     }
 
-    private lateinit var zbView: ZBarScannerView
     private var resScan = ""
     private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var codeScanner: CodeScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        zbView = ZBarScannerView(this)
-        zbView.setAutoFocus(true)
-        zbView.flash = true
-        setContentView(zbView)
+        setContentView(R.layout.activity_scan_card)
+        val scannerView = findViewById<CodeScannerView>(R.id.scanner_view)
+
         val fromCamera = intent.extras?.getString(SCANINFOCARD)
-        mediaPlayer = MediaPlayer.create(this, R.raw.payment_succes)
         resScan = fromCamera.toString()
+        mediaPlayer = MediaPlayer.create(this, R.raw.payment_succes)
+
+        codeScanner = CodeScanner(this, scannerView)
+
+        codeScanner.camera = CodeScanner.CAMERA_BACK
+        codeScanner.formats = CodeScanner.ALL_FORMATS
+        codeScanner.autoFocusMode = AutoFocusMode.SAFE
+        codeScanner.scanMode = ScanMode.SINGLE
+        codeScanner.isAutoFocusEnabled = true
+        codeScanner.isFlashEnabled = false
+
+
+        codeScanner.decodeCallback = DecodeCallback {
+            runOnUiThread {
+                vibroFone()
+                val intent = Intent(this@ScanCardActivity, MainActivity::class.java)
+                if (resScan == "/") {
+                    intent.putExtra(SCANINFOCARD, "${it.text}/")
+                } else {
+                    intent.putExtra(SCANINFOCARD, it.text)
+                }
+                startActivity(intent)
+                finish()
+            }
+        }
+        codeScanner.errorCallback = ErrorCallback {
+            runOnUiThread {
+                Toast.makeText(this, "Camera initialization error: ${it.message}",
+                    Toast.LENGTH_LONG).show()
+            }
+        }
+
+        scannerView.setOnClickListener {
+            codeScanner.startPreview()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        zbView.setResultHandler(this)
-        zbView.startCamera()
+        codeScanner.startPreview()
     }
 
     override fun onPause() {
+        codeScanner.releaseResources()
         super.onPause()
-        zbView.stopCamera()
     }
 
-    override fun handleResult(result : Result?) {
-        vibroFone()
-        val intent = Intent(this@ScanCardActivity, MainActivity::class.java)
-        if (resScan == "/") {
-            intent.putExtra(SCANINFOCARD, "${result?.contents}/")
-        } else {
-            intent.putExtra(SCANINFOCARD, result?.contents)
-        }
-        startActivity(intent)
-        finish()
-    }
+//    override fun handleResult(result : Result?) {
+//        vibroFone()
+//        val intent = Intent(this@ScanCardActivity, MainActivity::class.java)
+//        if (resScan == "/") {
+//            intent.putExtra(SCANINFOCARD, "${result?.contents}/")
+//        } else {
+//            intent.putExtra(SCANINFOCARD, result?.contents)
+//        }
+//        startActivity(intent)
+//        finish()
+//    }
 
     public override fun onNewIntent(paramIntent: Intent) {
         super.onNewIntent(paramIntent)
@@ -70,7 +104,6 @@ class ScanCardActivity : NfcAct(), ZBarScannerView.ResultHandler {
         } else {
             intent.putExtra(SCANINFOCARD, decimalString)
         }
-        zbView.flash = false
         startActivity(intent)
         finish()
     }
