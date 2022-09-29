@@ -26,6 +26,8 @@ class MainActivity : NfcAct(), KoinComponent {
 
     private val bundle = Bundle()
     private var messageAnswerKontur = ""
+    private lateinit var url: String
+    private lateinit var urlPassage: String
     private lateinit var infoCard: Button
     private lateinit var passageCard: Button
     private val infoCardFragment: InfoCardFragment = InfoCardFragment()
@@ -51,8 +53,6 @@ class MainActivity : NfcAct(), KoinComponent {
         val dataSourceCard = DataSourceCard()
         val dataSourceCatalogPackage = DataSourceCatalogPackage()
         val konturController = KonturController()
-        var url = ""
-        var urlPassage = ""
         var messageInfoCard =
             "<?xml version=\"1.0\" encoding=\"windows1251\" ?>" +
                     "<spd-xml-api>" +

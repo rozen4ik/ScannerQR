@@ -15,6 +15,7 @@
             <stringArg name="classpath">
               <args>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/916716b355dd88a7f202613d174595bf/transformed/jetified-kotlin-android-extensions-runtime-1.7.10.jar</arg>
+                <arg>$MODULE_DIR$/../../../fudi-nfc/build/intermediates/compile_library_classes_jar/debug/classes.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/7e8bc0bad72a0dd2ee361a2de0332325/transformed/navigation-ui-ktx-2.5.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/378e9172fb0a7eb96677730a9a14efdc/transformed/navigation-ui-2.5.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/8d80985a60d3a1bf822b89bbba0d6852/transformed/material-1.5.0-api.jar</arg>
@@ -92,8 +93,8 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/f573f8bc3e6093b426defddb0542e0f8/transformed/jetified-annotations-16.0.1.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/cd8a9c60131c533d6d3f94cd296b8cd4/transformed/jetified-core-3.3.3.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/c409ca8659c671ac8c9f92dcae051d5d/transformed/jetified-kotlin-stdlib-common-1.7.10.jar</arg>
-                <arg>$USER_HOME$/Library/Android/sdk/platforms/android-32/android.jar</arg>
-                <arg>$USER_HOME$/Library/Android/sdk/build-tools/30.0.3/core-lambda-stubs.jar</arg>
+                <arg>$USER_HOME$/AppData/Local/Android/Sdk/platforms/android-32/android.jar</arg>
+                <arg>$USER_HOME$/AppData/Local/Android/Sdk/build-tools/30.0.3/core-lambda-stubs.jar</arg>
               </args>
             </stringArg>
             <stringArg name="destination" arg="$MODULE_DIR$/../../../app/build/tmp/kotlin-classes/debugAndroidTest" />

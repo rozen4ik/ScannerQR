@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    android:orientation="vertical"
+    tools:context=".view.ListDeviceFragment">
+
+    <TextView
+        android:id="@+id/textDevices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" Список устройств"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <ListView
+        android:id="@+id/listDevices"
+        style="@android:style/Widget.Material.ListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="#29B6F6"
+        android:dividerHeight="5dp" />
+
+</LinearLayout>
