@@ -167,6 +167,7 @@ class MainActivity : NfcAct(), KoinComponent {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu?.add(Menu.NONE, 2, 2, "Ручной ввод")
+        menu?.add(Menu.NONE, 3, 2, "Управление устройствами")
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
@@ -181,6 +182,12 @@ class MainActivity : NfcAct(), KoinComponent {
             }
             2 -> {
                 val intent = Intent(this@MainActivity, ManualActivity::class.java)
+                startActivity(intent)
+                finish()
+                return true
+            }
+            3 -> {
+                val intent = Intent(this@MainActivity, DeviceManagementActivity::class.java)
                 startActivity(intent)
                 finish()
                 return true

@@ -85,6 +85,7 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu?.add(Menu.NONE, 2, 2, "Ручной ввод")
         menu?.add(Menu.NONE, 3, 2, "Автоматический")
+        menu?.add(Menu.NONE, 4, 2, "Управление устройствами")
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
@@ -105,6 +106,12 @@ class SettingsActivity : AppCompatActivity() {
             }
             R.id.action_about -> {
                 val intent = Intent(this@SettingsActivity, AboutActivity::class.java)
+                startActivity(intent)
+                finish()
+                return true
+            }
+            4 -> {
+                val intent = Intent(this@SettingsActivity, DeviceManagementActivity::class.java)
                 startActivity(intent)
                 finish()
                 return true

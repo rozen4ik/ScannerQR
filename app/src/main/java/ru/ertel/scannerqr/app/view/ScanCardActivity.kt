@@ -81,18 +81,6 @@ class ScanCardActivity : NfcAct() {
         super.onPause()
     }
 
-//    override fun handleResult(result : Result?) {
-//        vibroFone()
-//        val intent = Intent(this@ScanCardActivity, MainActivity::class.java)
-//        if (resScan == "/") {
-//            intent.putExtra(SCANINFOCARD, "${result?.contents}/")
-//        } else {
-//            intent.putExtra(SCANINFOCARD, result?.contents)
-//        }
-//        startActivity(intent)
-//        finish()
-//    }
-
     public override fun onNewIntent(paramIntent: Intent) {
         super.onNewIntent(paramIntent)
         val dataFull = getMAC(intent.getParcelableExtra(NfcAdapter.EXTRA_TAG) as? Tag).replace(":", "")

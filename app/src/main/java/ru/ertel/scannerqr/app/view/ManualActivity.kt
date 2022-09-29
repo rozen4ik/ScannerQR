@@ -153,6 +153,7 @@ class ManualActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu?.add(Menu.NONE, 3, 2, "Автоматический")
+        menu?.add(Menu.NONE, 4, 2, "Управление устройствами")
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
@@ -167,6 +168,12 @@ class ManualActivity : AppCompatActivity() {
             }
             3 -> {
                 val intent = Intent(this@ManualActivity, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+                return true
+            }
+            4 -> {
+                val intent = Intent(this@ManualActivity, DeviceManagementActivity::class.java)
                 startActivity(intent)
                 finish()
                 return true
