@@ -42,7 +42,6 @@ class DeviceManagementActivity : AppCompatActivity() {
         listDeviceFragment = ListDeviceFragment()
         konturController = KonturController()
         url = "$bodyURL/monitor?script=True"
-        Log.d("TAG", url)
         messageListDevices = "<?xml version=\"1.0\" encoding=\"Windows-1251\"?>\n" +
                 "<script/>"
 

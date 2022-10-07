@@ -92,29 +92,50 @@ class ManualActivity : AppCompatActivity() {
 
         infoManulaCard.setOnClickListener {
             recreate()
+
+            val set = getSharedPreferences("konturToken", MODE_PRIVATE)
+            val numberKontur = set.getString(StartActivity.SAVE_TOKEN, "no").toString()
+
             messageInfoCard = messageInfoCard.replace(
                 "<client identifier=\"\">",
                 "<client identifier=\"${editNumberCard.text}\">"
             )
             url = "$bodyURL/spd-xml-api"
             urlPassage = "$bodyURL/monitor?script=True"
-            updateInfoCard(konturController, dataSourceCard, url, messageInfoCard)
-            bundle.putString("condition", dataSourceCard.getInfoCard().condition)
-            bundle.putString("number", dataSourceCard.getInfoCard().number)
-            bundle.putString("ruleOfUse", dataSourceCard.getInfoCard().ruleOfUse)
-            bundle.putString(
-                "permittedRates",
-                dataSourceCard.getInfoCard().permittedRates
+            updateInfoCard(
+                konturController,
+                dataSourceCard,
+                url,
+                messageInfoCard,
+                editNumberCard.text.toString(),
+                numberKontur
             )
-            bundle.putString("startAction", dataSourceCard.getInfoCard().startAction)
-            bundle.putString("endAction", dataSourceCard.getInfoCard().endAction)
-            bundle.putString("balance", dataSourceCard.getInfoCard().balance)
-            infoCardFragment.arguments = bundle
-            openFragment(infoCardFragment)
+            if (dataSourceCard.getInfoCard().condition == "Пиратская копия") {
+                val intent = Intent(this@ManualActivity, LicenseActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                bundle.putString("condition", dataSourceCard.getInfoCard().condition)
+                bundle.putString("number", dataSourceCard.getInfoCard().number)
+                bundle.putString("ruleOfUse", dataSourceCard.getInfoCard().ruleOfUse)
+                bundle.putString(
+                    "permittedRates",
+                    dataSourceCard.getInfoCard().permittedRates
+                )
+                bundle.putString("startAction", dataSourceCard.getInfoCard().startAction)
+                bundle.putString("endAction", dataSourceCard.getInfoCard().endAction)
+                bundle.putString("balance", dataSourceCard.getInfoCard().balance)
+                infoCardFragment.arguments = bundle
+                openFragment(infoCardFragment)
+            }
         }
 
         passageManualCard.setOnClickListener {
             recreate()
+
+            val set = getSharedPreferences("konturToken", MODE_PRIVATE)
+            val numberKontur = set.getString(StartActivity.SAVE_TOKEN, "no").toString()
+
             messageInfoCard = messageInfoCard.replace(
                 "<client identifier=\"\">",
                 "<client identifier=\"${editNumberCard.text}\">"
@@ -134,26 +155,36 @@ class ManualActivity : AppCompatActivity() {
                 messagePassageCard,
                 answerDevice,
                 messageUnBlockDevice,
-                messageInfoCard
+                messageInfoCard,
+                numberKontur
             )
-            bundle.putString("deviceName", dataSourceCatalogPackage.getPassageCard().deviceName)
-            bundle.putString("requestPassage", editNumberCard.text.toString())
-            bundle.putString("solution", dataSourceCatalogPackage.getPassageCard().solution)
-            bundle.putString("capt", dataSourceCatalogPackage.getPassageCard().capt)
-            bundle.putString(
-                "numberOfPasses",
-                dataSourceCatalogPackage.getPassageCard().numberOfPasses
-            )
-            bundle.putString("datePasses", dataSourceCatalogPackage.getPassageCard().datePasses)
-            bundle.putString("passageBalance", dataSourceCatalogPackage.getPassageCard().passageBalance)
-            passageCardFragment.arguments = bundle
-            openFragment(passageCardFragment)
+            if (dataSourceCatalogPackage.getPassageCard().solution == "Пиратская копия") {
+                val intent = Intent(this@ManualActivity, LicenseActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                bundle.putString("deviceName", dataSourceCatalogPackage.getPassageCard().deviceName)
+                bundle.putString("requestPassage", editNumberCard.text.toString())
+                bundle.putString("solution", dataSourceCatalogPackage.getPassageCard().solution)
+                bundle.putString("capt", dataSourceCatalogPackage.getPassageCard().capt)
+                bundle.putString(
+                    "numberOfPasses",
+                    dataSourceCatalogPackage.getPassageCard().numberOfPasses
+                )
+                bundle.putString("datePasses", dataSourceCatalogPackage.getPassageCard().datePasses)
+                bundle.putString(
+                    "passageBalance",
+                    dataSourceCatalogPackage.getPassageCard().passageBalance
+                )
+                passageCardFragment.arguments = bundle
+                openFragment(passageCardFragment)
+            }
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu?.add(Menu.NONE, 3, 2, "Автоматический")
-        menu?.add(Menu.NONE, 4, 2, "Управление устройствами")
+//        menu?.add(Menu.NONE, 4, 2, "Управление устройствами")
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
@@ -172,12 +203,12 @@ class ManualActivity : AppCompatActivity() {
                 finish()
                 return true
             }
-            4 -> {
-                val intent = Intent(this@ManualActivity, DeviceManagementActivity::class.java)
-                startActivity(intent)
-                finish()
-                return true
-            }
+//            4 -> {
+//                val intent = Intent(this@ManualActivity, DeviceManagementActivity::class.java)
+//                startActivity(intent)
+//                finish()
+//                return true
+//            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -193,13 +224,15 @@ class ManualActivity : AppCompatActivity() {
         konturController: KonturController,
         dataSourceCard: DataSourceCard,
         url: String,
-        messageInfoCard: String
+        messageInfoCard: String,
+        number: String,
+        numberKontur: String
     ) {
         runBlocking {
             launch(newSingleThreadContext("MyOwnThread")) {
                 try {
                     messageAnswerKontur = konturController.requestPOST(url, messageInfoCard)
-                    dataSourceCard.setMessageInfoCard(messageAnswerKontur)
+                    dataSourceCard.setMessageInfoCard(messageAnswerKontur, number, numberKontur)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -216,15 +249,15 @@ class ManualActivity : AppCompatActivity() {
         messagePassageCard: String,
         answerDevice: String,
         messageUnBlockDevice: String,
-        messageInfoCard: String
-
+        messageInfoCard: String,
+        numberKontur: String
     ) {
         runBlocking {
             launch(newSingleThreadContext("MyOwnThread")) {
                 try {
                     konturController.requestPOST(urlPassage, messageBlockDevice)
                     var msg = konturController.requestPOST(urlPassage, messagePassageCard)
-                    dataSourceCatalogPackage.setMessagePassageCard(msg)
+                    dataSourceCatalogPackage.setMessagePassageCard(msg, numberKontur)
                     msg = msg.substringAfter("<Message>")
                     msg = msg.substringBefore("</Message>")
                     msg = msg.replace("rPrior", "rFinal")
@@ -237,14 +270,16 @@ class ManualActivity : AppCompatActivity() {
                         konturController.requestPOST(
                             urlPassage,
                             answerDevice
-                        )
+                        ),
+                        numberKontur
                     )
                     konturController.requestPOST(urlPassage, messageUnBlockDevice)
                     dataSourceCatalogPackage.setInfoCard(
                         konturController.requestPOST(
                             url,
                             messageInfoCard
-                        )
+                        ),
+                        numberKontur
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()

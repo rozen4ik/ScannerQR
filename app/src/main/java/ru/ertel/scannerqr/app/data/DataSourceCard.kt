@@ -14,30 +14,48 @@ class DataSourceCard {
         ""
     )
 
+    private lateinit var numberTokenKontur: String
 
-    fun setMessageInfoCard(message: String) {
-        if (getValidMessage(message)) {
-            card.condition = getCondition(message)
-            card.number = getNumber(message)
-            card.ruleOfUse = getRuleOfUse(message)
-            card.permittedRates = getPermittedRates(message)
-            card.startAction = getStartAction(message)
-            card.endAction = getEndAction(message)
-            card.balance = getBalance(message)
-        }
-        else {
-            card.number = "Данные не найдены"
-            card.number = "Данные не найдены"
-            card.ruleOfUse = "Данные не найдены"
-            card.permittedRates = "Данные не найдены"
-            card.startAction = "Данные не найдены"
-            card.endAction = "Данные не найдены"
-            card.balance = "Данные не найдены"
+    fun setMessageInfoCard(message: String, number: String, numberKontur: String) {
+        numberTokenKontur = numberKontur.substringAfterLast("*")
+        if (getAnswerLicense(message)) {
+            if (getValidMessage(message)) {
+                card.condition = getCondition(message)
+                card.number = number
+                card.ruleOfUse = getRuleOfUse(message)
+                card.permittedRates = getPermittedRates(message)
+                card.startAction = getStartAction(message)
+                card.endAction = getEndAction(message)
+                card.balance = getBalance(message)
+            } else {
+                card.condition = "Данные не найдены"
+                card.number = number
+                card.ruleOfUse = "Данные не найдены"
+                card.permittedRates = "Данные не найдены"
+                card.startAction = "Данные не найдены"
+                card.endAction = "Данные не найдены"
+                card.balance = "Данные не найдены"
+            }
+        } else {
+            card.condition = "Пиратская копия"
+            card.number = "Пиратская копия"
+            card.ruleOfUse = "Пиратская копия"
+            card.permittedRates = "Пиратская копия"
+            card.startAction = "Пиратская копия"
+            card.endAction = "Пиратская копия"
+            card.balance = "Пиратская копия"
         }
     }
 
     fun getInfoCard(): Card {
         return card
+    }
+
+    private fun getAnswerLicense(message: String): Boolean {
+        // Проверка на лицензию, указывается номер лицензии контура,
+        // при попытке использовать приложение на другом сервер,
+        // поступит сообщение о использовании пиратской версии
+        return message.contains("<attribute name=\"license\"  value=\"$numberTokenKontur\" />")
     }
 
     private fun getValidMessage(message: String): Boolean {
@@ -49,13 +67,6 @@ class DataSourceCard {
     private fun getCondition(message: String): String {
         var result = message.substringBefore("\"  valid=\"True\"  >")
         result = result.substringAfter("state=\"")
-        return result
-    }
-
-    private fun getNumber(message: String): String {
-        var result = message.substringAfter("identifier value=")
-        result = result.substringBefore("code")
-        result = result.replace("\"", "")
         return result
     }
 

@@ -1,6 +1,5 @@
 package ru.ertel.scannerqr.app.data
 
-import android.util.Log
 import ru.ertel.scannerqr.app.model.CatalogPackage
 
 class DataSourceCatalogPackage {
@@ -14,39 +13,65 @@ class DataSourceCatalogPackage {
         ""
     )
 
-    fun setMessagePassageCard(message: String) {
-        if (getValidMessage(message)) {
-            catalogPackage.solution = getSolution(message)
-            catalogPackage.capt = getCapt(message)
-            catalogPackage.numberOfPasses = getNumberOfPasses(message)
+    private lateinit var numberTokenKontur: String
+
+    fun setMessagePassageCard(message: String, numberKontur: String) {
+        numberTokenKontur = numberKontur.substringAfterLast("*")
+        if (getAnswerLicense(message)) {
+            if (getValidMessage(message)) {
+                catalogPackage.solution = getSolution(message)
+                catalogPackage.capt = getCapt(message)
+                catalogPackage.numberOfPasses = getNumberOfPasses(message)
+            } else {
+                catalogPackage.solution = "Данные не найдены"
+                catalogPackage.capt = "Данные не найдены"
+                catalogPackage.numberOfPasses = "Данные не найдены"
+            }
         } else {
-            catalogPackage.solution = "Данные не найдены"
-            catalogPackage.capt = "Данные не найдены"
-            catalogPackage.numberOfPasses = "Данные не найдены"
+            catalogPackage.solution = "Пиратская копия"
+            catalogPackage.capt = "Пиратская копия"
+            catalogPackage.numberOfPasses = "Пиратская копия"
         }
     }
 
-    fun setInfoCard(message: String) {
-        Log.d("TAG", message)
-        if (getValidInfoCard(message)) {
-            catalogPackage.passageBalance = getBalance(message)
+    fun setInfoCard(message: String, numberKontur: String) {
+        numberTokenKontur = numberKontur.substringAfterLast("*")
+        if (getAnswerLicense(message)) {
+            if (getValidInfoCard(message)) {
+                catalogPackage.passageBalance = getBalance(message)
+            } else {
+                catalogPackage.passageBalance = "Данные не найдены"
+            }
         } else {
-            catalogPackage.passageBalance = "Данные не найдены"
+            catalogPackage.passageBalance = "Пиратская копия"
         }
     }
 
-    fun setAnswerDevice(message: String) {
-        if (getValidMessageAnswer(message)) {
-            catalogPackage.deviceName = getDeviceName(message)
-            catalogPackage.datePasses = getDatePasses(message)
+    fun setAnswerDevice(message: String, numberKontur: String) {
+        numberTokenKontur = numberKontur.substringAfterLast("*")
+        if (getAnswerLicense(message)) {
+            if (getValidMessageAnswer(message)) {
+                catalogPackage.deviceName = getDeviceName(message)
+                catalogPackage.datePasses = getDatePasses(message)
+            } else {
+                catalogPackage.deviceName = "Данные не найдены"
+                catalogPackage.datePasses = "Данные не найдены"
+            }
         } else {
-            catalogPackage.deviceName = "Данные не найдены"
-            catalogPackage.datePasses = "Данные не найдены"
+            catalogPackage.deviceName = "Пиратская копия"
+            catalogPackage.datePasses = "Пиратская копия"
         }
     }
 
     fun getPassageCard(): CatalogPackage {
         return catalogPackage
+    }
+
+    private fun getAnswerLicense(message: String): Boolean {
+        // Проверка на лицензию, указывается номер лицензии контура,
+        // при попытке использовать приложение на другом сервер,
+        // поступит сообщение о использовании пиратской версии
+        return message.contains("<attribute name=\"license\"  value=\"$numberTokenKontur\" />")
     }
 
     private fun getValidMessage(message: String): Boolean {
@@ -76,7 +101,6 @@ class DataSourceCatalogPackage {
     private fun getCapt(message: String): String {
         var result = ""
         if (message.contains("cpRuleUse", ignoreCase = true)) {
-            Log.d("TAG", message)
             result =
                 message.substringAfter("<Parameter name=\"cpRuleUse\" type=\"String\" values=\"")
             result = result.substringBefore("\">")

@@ -28,7 +28,7 @@ class AboutActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu?.add(Menu.NONE, 2, 2, "Ручной ввод")
         menu?.add(Menu.NONE, 3, 2, "Автоматический")
-        menu?.add(Menu.NONE, 4, 2, "Управление устройствами")
+//        menu?.add(Menu.NONE, 4, 2, "Управление устройствами")
         return true
     }
 
@@ -46,12 +46,12 @@ class AboutActivity : AppCompatActivity() {
                 finish()
                 return true
             }
-            4 -> {
-                val intent = Intent(this@AboutActivity, DeviceManagementActivity::class.java)
-                startActivity(intent)
-                finish()
-                return true
-            }
+//            4 -> {
+//                val intent = Intent(this@AboutActivity, DeviceManagementActivity::class.java)
+//                startActivity(intent)
+//                finish()
+//                return true
+//            }
         }
         return super.onOptionsItemSelected(item);
     }
